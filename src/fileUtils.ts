@@ -8,16 +8,31 @@ function getCleanFilename(s: string): string {
 }
 
 function getFilepath(filename: string): string {
-  return `cypress/smart-logs/${new Date().toJSON().slice(0, 23).replace(/[:]/g, "-")}-${filename}`;
+  return `cypress/smart-logs/${new Date().toJSON().slice(0, 23).replace(/[:.]/g, "-")}-${filename}`;
 }
+
+const lastFile = {
+  fileNameWithoutTimestamp: "",
+  fullFileName: "",
+};
 
 export function writeFailedTestInfo(context: Mocha.Context, content: string): void {
   const testName = Cypress.currentTest.titlePath.join(" - ");
   const specName = Cypress.spec.name;
   const state = context.currentTest?.state;
 
-  const cleaned = getCleanFilename(Cypress._.join([Cypress._.split(specName, ".")[0], testName], "-"));
-  const filename = `${cleaned}${state !== undefined ? `-${state}` : ""}.json`;
-  const filePath = getFilepath(filename);
+  const filePath = prepareFilePath(specName, testName, state);
+
   cy.task("write-smart-logs", { filePath, content }, { log: false });
+}
+function prepareFilePath(specName: string, testName: string, state: string | undefined) {
+  const cleaned = getCleanFilename(Cypress._.join([Cypress._.split(specName, ".")[0], testName], "-"));
+  const fileNameWithoutTimestamp = `${cleaned}${state !== undefined ? `-${state}` : ""}.json`;
+  const filePath =
+    lastFile.fileNameWithoutTimestamp === fileNameWithoutTimestamp
+      ? lastFile.fullFileName
+      : getFilepath(fileNameWithoutTimestamp);
+  lastFile.fileNameWithoutTimestamp = fileNameWithoutTimestamp;
+  lastFile.fullFileName = filePath;
+  return filePath;
 }
