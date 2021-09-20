@@ -2,8 +2,10 @@
 
 import "../../commands";
 
-Cypress.SmartLog.setLogType("WARNING", {
+Cypress.SmartLogs.setLogType("WARNING", {
   format: "*",
+  target: { openMode: ["file", "window"], runMode: ["file"] },
+  pairedCommands: ["custom"],
 });
 
 Cypress.Commands.add("custom", () => {

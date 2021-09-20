@@ -9,7 +9,7 @@ describe("Log examples 2", () => {
     });
 
     it("cy logs", () => {
-      expect(true).to.be.true;
+      expect(true).to.be.false;
       cy.log("1");
       cy.log("INFO", "2");
       cy.log("WARNING", "2");

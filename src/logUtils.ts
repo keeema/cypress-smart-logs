@@ -1,8 +1,31 @@
 export function isTarget(logTypeConfig: Cypress.ILogTypeConfig, target: Cypress.LogTarget): boolean {
-  return !logTypeConfig.target || logTypeConfig.target.indexOf(target) >= 0;
+  const targetConfig = Cypress.browser.isHeaded ? logTypeConfig.target.openMode : logTypeConfig.target.runMode;
+
+  return targetConfig.indexOf(target) >= 0;
 }
+
+export function getCommandName(options: Partial<Cypress.LogConfig>): string {
+  return options.name || (Cypress as any).state("current")?.attributes?.name;
+}
+
+export function pairLogType(options: Partial<Cypress.LogConfig>): keyof Cypress.ILogTypes {
+  if (options.logType) {
+    return options.logType;
+  }
+
+  const commandName = getCommandName(options);
+
+  const found = Object.keys(Cypress.SmartLogs.LogTypes).filter((logType) =>
+    Cypress.SmartLogs.LogTypes[logType as keyof Cypress.ILogTypes].pairedCommands?.some(
+      (command) => command === commandName
+    )
+  )[0] as keyof Cypress.ILogTypes | undefined;
+
+  return found || "INFO";
+}
+
 export function enhanceOptions(
-  options: Partial<Cypress.ILogConfig>,
+  options: Partial<Cypress.LogConfig>,
   logType: keyof Cypress.ILogTypes,
   logTypeConfig: Cypress.ILogTypeConfig
 ) {
@@ -24,9 +47,9 @@ function addLogType(message: string[], logType: string) {
   }
 }
 function addTimeStamp(message: string[]): void {
-  Cypress.SmartLog.Config.timestamp &&
+  Cypress.SmartLogs.Config.timestamp &&
     message.unshift(
-      Cypress.SmartLog.Config.timestamp === "time"
+      Cypress.SmartLogs.Config.timestamp === "time"
         ? new Date().toJSON().slice(0, 23)
         : new Date().toJSON().slice(11, 23)
     );
@@ -34,10 +57,10 @@ function addTimeStamp(message: string[]): void {
 function isMessageWithTypeName(message: string[]): boolean {
   const index = messageStartIndex();
   return (
-    message.length > index && message[index] !== undefined && Cypress.SmartLog.LogTypes.hasOwnProperty(message[index]!)
+    message.length > index && message[index] !== undefined && Cypress.SmartLogs.LogTypes.hasOwnProperty(message[index]!)
   );
 }
-function createMessageArray(options: Partial<Cypress.ILogConfig>) {
+function createMessageArray(options: Partial<Cypress.LogConfig>) {
   const message: string[] = [];
 
   if (options.message) {
@@ -62,7 +85,7 @@ function formatMessage(format: string | [string, string] | undefined, message: s
 }
 function logTypeIndex(): number {
   let logTypeIndex = 0;
-  Cypress.SmartLog.Config.timestamp && ++logTypeIndex;
+  Cypress.SmartLogs.Config.timestamp && ++logTypeIndex;
   return logTypeIndex;
 }
 function messageStartIndex(): number {

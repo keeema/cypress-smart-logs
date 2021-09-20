@@ -18,18 +18,18 @@ export class LogsWrapper implements Cypress.Log {
   finish(): void {
     this.loggers.forEach((log) => log.finish());
   }
-  get(): Cypress.ILogConfig;
-  get<K extends keyof Cypress.ILogConfig>(attr?: K): Cypress.ILogConfig[K] | Cypress.ILogConfig {
+  get(): Cypress.LogConfig;
+  get<K extends keyof Cypress.LogConfig>(attr?: K): Cypress.LogConfig[K] | Cypress.LogConfig {
     return this.loggers[0]!.get(attr as K);
   }
 
-  set(options: Partial<Cypress.ILogConfig>): Cypress.Log;
-  set<K extends keyof Cypress.ILogConfig>(key: K, value: Cypress.ILogConfig[K]): Cypress.Log;
-  set<K extends keyof Cypress.ILogConfig>(
-    keyOrOptions: K | Partial<Cypress.ILogConfig>,
-    value?: Cypress.ILogConfig[K]
+  set(options: Partial<Cypress.LogConfig>): Cypress.Log;
+  set<K extends keyof Cypress.LogConfig>(key: K, value: Cypress.LogConfig[K]): Cypress.Log;
+  set<K extends keyof Cypress.LogConfig>(
+    keyOrOptions: K | Partial<Cypress.LogConfig>,
+    value?: Cypress.LogConfig[K]
   ): Cypress.Log {
-    this.loggers.forEach((log) => log.set(keyOrOptions as K, value as Cypress.ILogConfig[K]));
+    this.loggers.forEach((log) => log.set(keyOrOptions as K, value as Cypress.LogConfig[K]));
     return this;
   }
   snapshot(name?: string, options?: { at?: number; next: string }): Cypress.Log {

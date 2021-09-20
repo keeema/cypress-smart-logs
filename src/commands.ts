@@ -1,23 +1,13 @@
 /// <reference types="../index" />
 
-import { enhanceOptions } from "./logUtils";
+import { enhanceOptions, pairLogType } from "./logUtils";
 import { createLogsWrapper } from "./logFactory";
+import "./defaults";
 
 export const originalCypressLog = Cypress.log;
-
-Cypress.SmartLog = {
-  Config: { timestamp: "datetime" },
-  LogTypes: {
-    INFO: { target: ["file", "window"] },
-  } as Cypress.ILogTypes,
-  setLogType(type: keyof Cypress.ILogTypes, config: Cypress.ILogTypeConfig): void {
-    this.LogTypes[type] = config;
-  },
-};
-
-Cypress.log = (options: Partial<Cypress.ILogConfig>): Cypress.Log => {
-  const logType: keyof Cypress.ILogTypes = options.logType || "INFO";
-  const logTypeConfig: Cypress.ILogTypeConfig = Cypress.SmartLog.LogTypes[logType];
+Cypress.log = (options: Partial<Cypress.LogConfig>): Cypress.Log => {
+  const logType = pairLogType(options);
+  const logTypeConfig: Cypress.ILogTypeConfig = Cypress.SmartLogs.LogTypes[logType];
   const enhancedOptions = enhanceOptions(options, logType, logTypeConfig);
 
   return createLogsWrapper(enhancedOptions, logTypeConfig);

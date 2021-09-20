@@ -1,15 +1,21 @@
-export class FileLog implements Cypress.Log {
-  private _options: Partial<Cypress.ILogConfig>;
+import _ = require("cypress/types/lodash");
+
+export interface IWithText {
+  getText: string;
+}
+
+export class FileLog implements Cypress.Log, IWithText {
+  private _options: Partial<Cypress.LogConfig>;
   private _errorText = "";
   private _text = "";
 
-  constructor(options: Partial<Cypress.ILogConfig>) {
+  constructor(options: Partial<Cypress.LogConfig>) {
     this._options = { ...options };
     if (this._options.autoEnd) this.end();
 
     this.setText();
   }
-  get fileText(): string {
+  get getText(): string {
     return this._text;
   }
 
@@ -18,7 +24,9 @@ export class FileLog implements Cypress.Log {
     if (this._options.consoleProps) {
       message.push(JSON.stringify(this._options.consoleProps()));
     }
-    message.push(this._errorText);
+
+    this._errorText && message.push(this._errorText);
+
     this._text = message.join("\t");
   }
 
@@ -35,16 +43,16 @@ export class FileLog implements Cypress.Log {
     this.end();
   }
 
-  get(): Cypress.ILogConfig;
-  get<K extends keyof Cypress.ILogConfig>(attr?: K): Cypress.ILogConfig[K] | Cypress.ILogConfig {
-    return attr ? this._options[attr] : (this._options as Cypress.ILogConfig);
+  get(): Cypress.LogConfig;
+  get<K extends keyof Cypress.LogConfig>(attr?: K): Cypress.LogConfig[K] | Cypress.LogConfig {
+    return attr ? this._options[attr] : (this._options as Cypress.LogConfig);
   }
 
-  set(options: Partial<Cypress.ILogConfig>): Cypress.Log;
-  set<K extends keyof Cypress.ILogConfig>(key: K, value: Cypress.ILogConfig[K]): Cypress.Log;
-  set<K extends keyof Cypress.ILogConfig>(
-    keyOrOptions: K | Partial<Cypress.ILogConfig>,
-    value?: Cypress.ILogConfig[K]
+  set(options: Partial<Cypress.LogConfig>): Cypress.Log;
+  set<K extends keyof Cypress.LogConfig>(key: K, value: Cypress.LogConfig[K]): Cypress.Log;
+  set<K extends keyof Cypress.LogConfig>(
+    keyOrOptions: K | Partial<Cypress.LogConfig>,
+    value?: Cypress.LogConfig[K]
   ): Cypress.Log {
     if (typeof keyOrOptions !== "object") {
       this._options[keyOrOptions] = value;

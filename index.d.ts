@@ -3,34 +3,49 @@
 declare namespace Cypress {
   // eslint-disable-next-line @typescript-eslint/naming-convention
 
+  interface ResolvedConfigOptions {
+    "smart-logs-timestamp": LogTimestamp;
+    "smart-logs-folder": string;
+    "smart-logs-file-save": LogFileSave;
+  }
+
   interface Cypress {
-    SmartLog: {
+    SmartLogs: {
       Config: ISmartLogConfig;
       LogTypes: Cypress.ILogTypes;
-      setLogType(name: string, config: ILogTypeConfig): void;
+      setLogType(name: keyof Cypress.ILogTypes, config: ILogTypeConfig): void;
     };
   }
 
   type LogTarget = "file" | "window";
+  type LogTimestamp = "time" | "datetime" | false;
+  type LogFileSave = "all" | "failed";
 
   interface ILogTypeConfig {
     format?: string | [string, string];
-    target?: [LogTarget] | [LogTarget, LogTarget];
+    target: {
+      runMode: [LogTarget] | [LogTarget, LogTarget];
+      openMode: [LogTarget] | [LogTarget, LogTarget];
+    };
+    pairedCommands?: string[];
   }
 
   interface ISmartLogConfig {
-    timestamp?: "time" | "datetime" | false;
+    folder: string;
+    timestamp: LogTimestamp | false;
+    fileSave: LogFileSave;
   }
 
   interface ILogTypes {
     INFO: ILogTypeConfig;
+    ASSERT: ILogTypeConfig;
   }
 
   interface Chainable<Subject = any> {
     log(type: keyof ILogTypes, message: string, ...args: any[]): Chainable<null>;
   }
 
-  interface ILogConfig {
+  interface LogConfig {
     logType: keyof ILogTypes;
   }
 }

@@ -8,7 +8,7 @@ function getCleanFilename(s: string): string {
 }
 
 function getFilepath(filename: string): string {
-  return `cypress/smart-logs/${new Date().toJSON().slice(0, 23).replace(/[:.]/g, "-")}-${filename}`;
+  return `${Cypress.SmartLogs.Config.folder}/${new Date().toJSON().slice(0, 23).replace(/[:.]/g, "-")}-${filename}`;
 }
 
 const lastFile = {
@@ -22,7 +22,9 @@ export function writeFailedTestInfo(context: Mocha.Context, content: string): vo
   const state = context.currentTest?.state;
 
   const filePath = prepareFilePath(specName, testName, state);
-
+  if (context.currentTest?.state !== "failed" && Cypress.SmartLogs.Config.fileSave === "failed") {
+    return;
+  }
   cy.task("write-smart-logs", { filePath, content }, { log: false });
 }
 function prepareFilePath(specName: string, testName: string, state: string | undefined) {
