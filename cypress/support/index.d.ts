@@ -1,3 +1,5 @@
+/// <reference types="../.." />
+
 declare namespace Cypress {
   interface ILogTypes {
     WARNING: ILogTypeConfig;
