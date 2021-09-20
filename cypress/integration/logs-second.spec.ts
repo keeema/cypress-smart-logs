@@ -18,6 +18,11 @@ describe("Log examples 2", () => {
 
     it("Cypress.log", () => {
       Cypress.log({ message: ["3", "4"] });
+      const log = Cypress.log({ message: ["5", "6"] });
+      cy.wait(10000).then(() => {
+        log.set("consoleProps", () => ({ Test: "Testing value" }));
+        log.finish();
+      });
     });
 
     it("Custom command", () => {
