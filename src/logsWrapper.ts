@@ -12,7 +12,7 @@ export class LogsWrapper implements Cypress.Log {
     return this;
   }
   error(error: Error): Cypress.Log {
-    this.loggers.forEach((log) => log.error(error));
+    this.loggers.forEach((log) => log.error && log.error(error));
     return this;
   }
   finish(): void {

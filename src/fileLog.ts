@@ -1,5 +1,3 @@
-import _ = require("cypress/types/lodash");
-
 export interface IWithText {
   getText: string;
 }

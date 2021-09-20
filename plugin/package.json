@@ -1,0 +1,5 @@
+{
+  "name": "cypress-smart-logs-plugin",
+  "description": "Internal plugin package",
+  "main": "plugin.js"
+}
