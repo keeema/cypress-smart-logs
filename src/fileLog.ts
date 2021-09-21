@@ -1,3 +1,5 @@
+import { getCommandName } from "./logUtils";
+
 export interface IWithText {
   getText: string;
 }
@@ -6,6 +8,7 @@ export class FileLog implements Cypress.Log, IWithText {
   private _options: Partial<Cypress.LogConfig>;
   private _errorText = "";
   private _text = "";
+  private _originalMessages: string[] = [];
 
   constructor(options: Partial<Cypress.LogConfig>) {
     this._options = { ...options };
@@ -18,9 +21,15 @@ export class FileLog implements Cypress.Log, IWithText {
   }
 
   private setText(): void {
-    const message = [...((this._options.message || []) as string[])];
+    const message = (this._originalMessages = [...((this._options.message || this._originalMessages) as string[])]);
+
     if (this._options.consoleProps) {
       message.push(JSON.stringify(this._options.consoleProps()));
+    }
+
+    const commandName = getCommandName(this._options);
+    if (message[this.commandIndex] !== commandName) {
+      message.splice(this.commandIndex, 0, commandName);
     }
 
     this._errorText && message.push(this._errorText);
@@ -38,7 +47,7 @@ export class FileLog implements Cypress.Log, IWithText {
   }
 
   finish(): void {
-    this.end();
+    this.setText();
   }
 
   get(): Cypress.LogConfig;
@@ -61,5 +70,9 @@ export class FileLog implements Cypress.Log, IWithText {
   }
   snapshot(): Cypress.Log {
     return this;
+  }
+
+  private get commandIndex(): number {
+    return Cypress.SmartLogs.Config.timestamp ? 2 : 1;
   }
 }

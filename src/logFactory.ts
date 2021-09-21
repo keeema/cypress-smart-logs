@@ -9,7 +9,7 @@ export function createLogsWrapper(options: Partial<Cypress.LogConfig>, logTypeCo
   isTarget(logTypeConfig, "file") && loggers.push(createFileLog(options));
   isTarget(logTypeConfig, "window") && loggers.push(originalCypressLog(options));
 
-  return new LogsWrapper(loggers);
+  return new LogsWrapper(loggers, options);
 }
 function createFileLog(options: Partial<Cypress.LogConfig>): FileLog {
   const log = new FileLog(options);

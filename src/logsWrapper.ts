@@ -1,6 +1,8 @@
 export class LogsWrapper implements Cypress.Log {
   private loggers: Cypress.Log[];
-  constructor(loggers: Cypress.Log[]) {
+  private attributes: Partial<Cypress.LogConfig>;
+  constructor(loggers: Cypress.Log[], options: Partial<Cypress.LogConfig>) {
+    this.attributes = options;
     this.loggers = loggers;
     if (loggers.length === 0) {
       throw new Error("Incorrect integration of cypress-smart-log. No log was defined.");
@@ -12,15 +14,16 @@ export class LogsWrapper implements Cypress.Log {
     return this;
   }
   error(error: Error): Cypress.Log {
-    this.loggers.forEach((log) => log.error && log.error(error));
+    this.loggers.forEach((log) => log.error(error));
     return this;
   }
   finish(): void {
     this.loggers.forEach((log) => log.finish());
   }
   get(): Cypress.LogConfig;
+  get<K extends keyof Cypress.LogConfig>(attr: K): Cypress.LogConfig[K];
   get<K extends keyof Cypress.LogConfig>(attr?: K): Cypress.LogConfig[K] | Cypress.LogConfig {
-    return this.loggers[0]!.get(attr as K);
+    return this.loggers[this.loggers.length - 1]!.get(attr as K);
   }
 
   set(options: Partial<Cypress.LogConfig>): Cypress.Log;
@@ -35,5 +38,37 @@ export class LogsWrapper implements Cypress.Log {
   snapshot(name?: string, options?: { at?: number; next: string }): Cypress.Log {
     this.loggers.forEach((log) => log.snapshot(name, options));
     return this;
+  }
+
+  unset<K extends keyof Cypress.LogConfig>(key: K) {
+    return this.set(key, undefined as any);
+  }
+
+  invoke<K extends keyof Cypress.LogConfig>(key: K) {
+    const invoke = () => {
+      // ensure this is a callable function
+      // and set its default to empty object literal
+      const fn = this.get(key);
+
+      if (Cypress._.isFunction(fn)) {
+        return fn();
+      }
+
+      return fn;
+    };
+
+    return invoke() || {};
+  }
+
+  toJSON() {
+    return Cypress._.chain(this.attributes)
+      .omit("error")
+      .omitBy(Cypress._.isFunction)
+      .extend({
+        err: (Cypress as any).$errUtils.wrapErr(this.get("error" as any)),
+        consoleProps: this.invoke("consoleProps"),
+        renderProps: this.invoke("renderProps" as any),
+      })
+      .value();
   }
 }

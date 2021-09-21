@@ -17,10 +17,7 @@ const lastFile = {
 };
 
 export function writeFailedTestInfo(context: Mocha.Context, content: string): void {
-  // const testName = Cypress.currentTest.titlePath.join(" - ");
-  const testName = (Cypress as Object as { mocha: { getRunner: Function } }).mocha
-    .getRunner()
-    .suite.ctx.test.fullTitle();
+  const testName = Cypress.currentTest.titlePath.join(" - ");
   const specName = Cypress.spec.name;
   const state = context.currentTest?.state;
 

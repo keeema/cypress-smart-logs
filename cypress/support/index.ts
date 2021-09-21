@@ -1,4 +1,4 @@
-/// <reference types="." />
+/// <reference path="./index.d.ts" />
 
 import "../../commands";
 
