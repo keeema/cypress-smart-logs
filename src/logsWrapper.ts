@@ -71,4 +71,8 @@ export class LogsWrapper implements Cypress.Log {
       })
       .value();
   }
+
+  pick(...args: any[]) {
+    return Cypress._.pick(this.attributes, args);
+  }
 }

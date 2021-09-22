@@ -1,4 +1,4 @@
-/// <reference types="../index" />
+/// <reference path="../index.d.ts" />
 
 import { enhanceOptions, pairLogType } from "./logUtils";
 import { createLogsWrapper } from "./logFactory";

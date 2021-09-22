@@ -1,6 +1,6 @@
 {
   "name": "cypress-smart-logs",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Cypress plugin to enhance work with logs.",
   "main": "index",
   "scripts": {

@@ -24,7 +24,12 @@ export class FileLog implements Cypress.Log, IWithText {
     const message = (this._originalMessages = [...((this._options.message || this._originalMessages) as string[])]);
 
     if (this._options.consoleProps) {
-      message.push(JSON.stringify(this._options.consoleProps()));
+      const props = this.invoke("consoleProps") || {};
+      try {
+        message.push(JSON.stringify(props));
+      } catch {
+        message.push("Not possible to log consoleProps.");
+      }
     }
 
     const commandName = getCommandName(this._options);
@@ -38,19 +43,43 @@ export class FileLog implements Cypress.Log, IWithText {
   }
 
   end(): Cypress.Log {
+    this.set("ended" as any, true);
+    this.set("state" as any, "passed");
+
     this.setText();
     return this;
   }
   error(error: Error): Cypress.Log {
     this._errorText = `${error.name}\n${error.message}\n${error.stack}`;
+    this.set("ended" as any, true);
+    this.set("state" as any, "failed");
+    this.set("error" as any, error);
+
     return this;
   }
 
   finish(): void {
-    this.setText();
+    this.end();
+  }
+
+  invoke<K extends keyof Cypress.LogConfig>(key: K) {
+    const invoke = () => {
+      // ensure this is a callable function
+      // and set its default to empty object literal
+      const fn = this.get(key);
+
+      if (Cypress._.isFunction(fn)) {
+        return fn();
+      }
+
+      return fn;
+    };
+
+    return invoke() || {};
   }
 
   get(): Cypress.LogConfig;
+  get<K extends keyof Cypress.LogConfig>(attr: K): Cypress.LogConfig[K];
   get<K extends keyof Cypress.LogConfig>(attr?: K): Cypress.LogConfig[K] | Cypress.LogConfig {
     return attr ? this._options[attr] : (this._options as Cypress.LogConfig);
   }
