@@ -29,7 +29,7 @@ export function writeFailedTestInfo(context: Mocha.Context, content: string): vo
 }
 function prepareFilePath(specName: string, testName: string, state: string | undefined) {
   const cleaned = getCleanFilename(Cypress._.join([Cypress._.split(specName, ".")[0], testName], "-"));
-  const fileNameWithoutTimestamp = `${cleaned}${state !== undefined ? `-${state}` : ""}.json`;
+  const fileNameWithoutTimestamp = `${cleaned}${state !== undefined ? `-${state}` : ""}.log`;
   const filePath =
     lastFile.fileNameWithoutTimestamp === fileNameWithoutTimestamp
       ? lastFile.fullFileName
