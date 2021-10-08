@@ -4,7 +4,6 @@ import * as fs from "fs";
 import * as path from "path";
 
 export function install(on: Cypress.PluginEvents, _config: Cypress.ConfigOptions): void {
-  on("task", { "clean-smart-logs": ({ path }: { path: string }) => clearFiles(path) });
   on("task", {
     "write-smart-logs": ({ filePath, content }: { filePath: string; content: string }) => writeLogs(filePath, content),
   });

@@ -5,10 +5,6 @@ exports.install = void 0;
 var fs = require("fs");
 var path = require("path");
 function install(on, _config) {
-    on("task", { "clean-smart-logs": function (_a) {
-            var path = _a.path;
-            return clearFiles(path);
-        } });
     on("task", {
         "write-smart-logs": function (_a) {
             var filePath = _a.filePath, content = _a.content;
