@@ -15,6 +15,9 @@ function install(on, _config) {
             return writeLogs(filePath, content);
         }
     });
+    on("before:run", function (details) {
+        clearFiles(details.config["smart-logs-folder"] || "cypress/smart-logs");
+    });
 }
 exports.install = install;
 function clearFiles(directory) {

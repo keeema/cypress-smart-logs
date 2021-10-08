@@ -8,6 +8,9 @@ export function install(on: Cypress.PluginEvents, _config: Cypress.ConfigOptions
   on("task", {
     "write-smart-logs": ({ filePath, content }: { filePath: string; content: string }) => writeLogs(filePath, content),
   });
+  on("before:run", (details) => {
+    clearFiles(details.config["smart-logs-folder"] || "cypress/smart-logs");
+  });
 }
 
 function clearFiles(directory: string): null {
