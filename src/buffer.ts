@@ -4,10 +4,6 @@ import { writeFailedTestInfo as writeFileLogs } from "./fileUtils";
 
 export let buffer: IWithText[] = [];
 
-before(() =>
-  cy.task("clean-smart-logs", { path: Cypress.config("smart-logs-folder") || "cypress/smart-logs" }, { log: false })
-);
-
 const origDescribe = describe;
 
 function newDescribe(this: Suite, title: string): Suite;
