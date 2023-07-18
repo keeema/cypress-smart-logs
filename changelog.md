@@ -2,7 +2,7 @@
 
 ### 0.2.0
 
-- Upgrade cypress@^12.17.1
+- Upgrade cypress@12.14.0
 
 ### 0.1.0
 
