@@ -1,6 +1,6 @@
 {
   "name": "cypress-smart-logs",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Cypress plugin to enhance work with logs.",
   "main": "index",
   "scripts": {
@@ -11,7 +11,7 @@
   "author": "keeema",
   "license": "ISC",
   "dependencies": {
-    "cypress": "^12.11.0"
+    "cypress": "12.14.0"
   },
   "devDependencies": {
     "@types/node": "^16.9.1",
